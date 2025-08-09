@@ -1,0 +1,18 @@
+CC = gcc
+CFLAGS = -Wall -Werror -g -DDEBUG_LEVEL=$(DBG_LVL)
+TARGET = sll
+OBJS = src/main.o src/sll_api.o
+INCLUDE = ./include
+
+.PHONY = all clean
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ -I$(INCLUDE) $^
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -I$(INCLUDE) -o $@
+
+clean:
+	rm -rf $(TARGET) $(OBJS) tags

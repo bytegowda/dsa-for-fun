@@ -1,0 +1,32 @@
+# ==== Autotools generated (anywhere) ====
+Makefile
+Makefile.in
+aclocal.m4
+autom4te.cache/
+compile
+config.h
+config.h.in
+config.log
+config.status
+configure
+depcomp
+install-sh
+missing
+stamp-h1
+ar-lib
+
+# Editor backups
+*~
+
+# ==== Build artifacts (anywhere) ====
+#*.o
+#*.a
+#*.la
+#*.lo
+*.Plo
+.deps/
+.libs/
+
+# Demo binaries (pattern for any demo target ending with _demo)
+# **/*_demo
+
