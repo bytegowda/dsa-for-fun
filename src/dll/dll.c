@@ -1,26 +1,26 @@
-#include <dsa/sll.h>
+#include <dsa/dll.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-void sll_init(sll *list) {
+void dll_init(dll *list) {
     list->head = list->tail = NULL;
     list->size = 0;
 }
 
-void sll_node_free(Node* node) {
+void dll_node_free(dll_node* node) {
     if(node) {
         free(node);
         node = NULL;
     }
 }
 
-void sll_free(sll *list) {
+void dll_free(dll *list) {
     if(list->head) {
-        Node *tmp = NULL;
+        dll_node *tmp = NULL;
         while(list->head != NULL) {
             DBG_PRINT(LVL_DBG, " data=%d\n", list->head->data);
             tmp = list->head->next;
-            sll_node_free(list->head);
+            dll_node_free(list->head);
             list->head = tmp;
         }
 
@@ -28,8 +28,8 @@ void sll_free(sll *list) {
     }
 }
 
-int sll_append(sll *list, const int data) {
-    Node *new_node = (Node*)malloc(sizeof(Node));
+int dll_append(dll *list, const int data) {
+    dll_node *new_node = (dll_node*)malloc(sizeof(dll_node));
     if(NULL == new_node) {
         DBG_PRINT(LVL_ERR, "FATAL: Failed to MALLOC. Exit...\n");
         errno = ENOMEM;
@@ -38,6 +38,7 @@ int sll_append(sll *list, const int data) {
 
     new_node->data = data;
     new_node->next = NULL;
+    new_node->prev = NULL;
 
     if(NULL == list->head) {
         list->head = new_node;
@@ -45,6 +46,7 @@ int sll_append(sll *list, const int data) {
     }
     else {
         list->tail->next = new_node;
+        new_node->prev = list->tail;
         list->tail = new_node;
     }
 
@@ -52,73 +54,85 @@ int sll_append(sll *list, const int data) {
     return 0;
 }
 
-int sll_prepend(sll *list, const int data) {
-    Node *new_node = (Node*)malloc(sizeof(Node));
+int dll_prepend(dll *list, const int data) {
+    dll_node *new_node = (dll_node*)malloc(sizeof(dll_node));
     if(NULL == new_node) {
         DBG_PRINT(LVL_ERR, "FATAL: Failed to MALLOC. Exit...\n");
-        //exit(EXIT_FAILURE);
         errno = ENOMEM;
         return -1;
     }
     new_node->data = data;
     new_node->next = NULL;
+    new_node->prev = NULL;
 
     if(NULL == list->head) {
         list->head = new_node;
         list->tail = new_node;
     }
     else {
-        Node *tmp = list->head;
+        list->head->prev = new_node;
+        new_node->next = list->head;
         list->head = new_node;
-        list->head->next = tmp;
     }
 
     list->size++;
     return 0;
 }
 
-void sll_display(const sll * const list) {
+void dll_display_from_head(const dll * const list) {
     if(list->head) {
-        Node *tmp = list->head;
+        dll_node *tmp = list->head;
         int i=0;
-        DBG_PRINT(LVL_INFO, "===== Printing LL data Start =========\n");
+        DBG_PRINT(LVL_INFO, "===== Printing DLL From Head - Start =========\n");
         while(tmp != NULL) {
             DBG_PRINT(LVL_INFO, "node = %d, data = %d\n", i, tmp->data);
             i++;
             tmp = tmp->next;
         }
-        DBG_PRINT(LVL_INFO, "===== Printing LL data End =========\n");
+        DBG_PRINT(LVL_INFO, "===== Printing DLL End =========\n");
     }
-    DBG_PRINT(LVL_INFO, "List size = %ld\n", sll_list_size(list));
+    DBG_PRINT(LVL_INFO, "List size = %ld\n", dll_list_size(list));
 }
 
-int sll_del_frontnode(sll *list) {
+void dll_display_from_tail(const dll * const list) {
+    if(list->tail) {
+        dll_node *tmp = list->tail;
+        int i=0;
+        DBG_PRINT(LVL_INFO, "===== Printing DLL from Tail - Start =========\n");
+        while(tmp != NULL) {
+            DBG_PRINT(LVL_INFO, "node = %d, data = %d\n", i, tmp->data);
+            i++;
+            tmp = tmp->prev;
+        }
+        DBG_PRINT(LVL_INFO, "===== Printing DLL End =========\n");
+    }
+    DBG_PRINT(LVL_INFO, "List size = %ld\n", dll_list_size(list));
+}
+int dll_del_frontnode(dll *list) {
     if(list) {
         if(list->head == list->tail) {
-            sll_free(list);
+            dll_free(list);
         }
         else {
-            Node *p = list->head;
+            dll_node *p = list->head;
             list->head = p->next;
-            sll_node_free(p);
+            list->head->prev = NULL;
+            dll_node_free(p);
         }
         list->size--;
     }
     return 0;
 }
 
-int sll_del_backnode(sll *list) {
+int dll_del_backnode(dll *list) {
     if(list) {
         if(list->head == list->tail) {
-            sll_free(list);
+            dll_free(list);
         }
         else {
-            Node *p = list->head;
-            while(p->next != list->tail)
-                p = p->next;
-
+            dll_node *p = list->tail->prev;
+            dll_node_free(list->tail);
             list->tail = p;
-            sll_node_free(list->tail->next);
             list->tail->next = NULL;
         }
         list->size--;
@@ -126,7 +140,7 @@ int sll_del_backnode(sll *list) {
     return 0;
 }
 
-size_t sll_list_size(const sll * const list) {
+size_t dll_list_size(const dll * const list) {
     if(list) {
         return list->size;
     }

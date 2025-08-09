@@ -13,8 +13,10 @@ AC_CONFIG_FILES([
   Makefile
   src/Makefile
   src/sll/Makefile
+  src/dll/Makefile
   demos/Makefile
   demos/sll/Makefile
+  demos/dll/Makefile
 ])
 AC_OUTPUT
 

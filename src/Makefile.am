@@ -1,2 +1,2 @@
-SUBDIRS = sll
+SUBDIRS = sll dll
 

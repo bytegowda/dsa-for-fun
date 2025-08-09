@@ -13,6 +13,7 @@ Just learning DSA for fun
         - [ ] Glue Based SLL
 
     - [ ] Doubly Linked List (DLL)
+        - [x] Simple DLL
         - [ ] Intrusive Linux Style DLL
         - [ ] Glue Based DLL
 
